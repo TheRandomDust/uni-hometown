@@ -3,7 +3,10 @@ const Schema = mongoose.Schema;
 
 const HometownSchema = new Schema({
 	town: String,
-	milesFromUni: Number,
+	milesFromUni: {
+		type: Number,
+		min: 0
+	},
 	description: String,
 	extraCoolThings: String,
 	// location: String,

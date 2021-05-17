@@ -3,34 +3,39 @@
 	<div class="row">
 		<h1 class="text-center">Edit Hometown</h1>
 		<div class="col-8 offset-2">
-			<form action="/hometowns/<%= hometown._id %>?_method=PUT" method="POST">
+			<form action="/hometowns/<%= hometown._id %>?_method=PUT" method="POST" novalidate class="needs-validation">
 				<div class="mb-3">
 					<label for="town" class="form-label">Enter a town:</label>
 					<input type="text" name="hometown[town]" id="town" class="form-control"
-						value="<%= hometown.town %>">
+						value="<%= hometown.town %>" required>
+						<div class="valid-feedback">Looks good!</div>
 				</div>
 				<div class="mb-3">
 					<label for="images" class="form-label">Enter an image URL (or a comma-separated list for multiple):</label>
 					<input type="text" name="hometown[images]" id="images" class="form-control"
-						value="<%= hometown.images[0] %>">
+						value="<%= hometown.images[0] %>" required>
+						<div class="valid-feedback">Looks good!</div>
 				</div>
 				<div class="mb-3">
 					<label for="milesFromUni" class="form-label">Miles from University (approx):</label>
 					<div class="input-group">
 						<span class="input-group-text" id="milesFromUni-label">Miles</span>
 						<input type="text" name="hometown[milesFromUni]" class="form-control" id="milesFromUni" placeholder="4200"
-							aria-label="milesFromUni" aria-describedby="milesFromUni-label" value="<%= hometown.milesFromUni %>">
+							aria-label="milesFromUni" aria-describedby="milesFromUni-label" value="<%= hometown.milesFromUni %>" required>
+						<div class="valid-feedback">Looks good!</div>
 					</div>
 				</div>
 				<div class="mb-3">
 					<label for="description" class="form-label">Enter a desciption:</label>
 					<textarea type="text" name="hometown[description]" id="description"
-						class="form-control"><%= hometown.description %></textarea>
+						class="form-control" required><%= hometown.description %></textarea>
+					<div class="valid-feedback">Looks good!</div>
 				</div>
 				<div class="mb-3">
 					<label for="extraCoolThings" class="form-label">Enter more interesting things:</label>
 					<textarea type="text" name="hometown[extraCoolThings]" id="extraCoolThings"
-						class="form-control"><%= hometown.extraCoolThings %></textarea>
+						class="form-control" required><%= hometown.extraCoolThings %></textarea>
+					<div class="valid-feedback">Looks good!</div>
 				</div>
 				<div class="mb-3">
 					<button class="btn btn-info">Save Hometown</button>

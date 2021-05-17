@@ -5,6 +5,8 @@ const Hometown = require('./models/hometown');
 const ejsMate = require('ejs-mate');
 const methodOverride = require('method-override');
 const morgan = require('morgan'); // TODO maybe remove later
+const AppError = require('./utils/AppError');
+const wrapAsync = require('./utils/wrapAsync');
 
 // config db and connect
 mongoose.connect('mongodb://localhost:27017/hometowns', {
@@ -32,49 +34,55 @@ app.use(express.urlencoded({ extended: true })); // middleware to be able to par
 app.use(methodOverride('_method')); // to use query param to override forms to delete / put / patch
 app.use(morgan('dev')); // TODO maybe remove later
 
-
-/** 
+/**
  * routes
  */
 app.get('/', (req, res) => {
 	res.render('home');
 });
 
-app.get('/hometowns', async (req, res) => { 
+
+app.get('/hometowns', wrapAsync(async (req, res) => { 
 	const hometowns = await Hometown.find({});
 	res.render('hometowns/index', { hometowns });
-});
+}));
 
 app.get('/hometowns/new', (req, res) => {
 	res.render('hometowns/new');
 });
 
-app.post('/hometowns', async (req, res) => {
+app.post('/hometowns', wrapAsync(async (req, res) => {
 	const hometown = new Hometown(req.body.hometown);
 	await hometown.save();
 	res.redirect(`/hometowns/${hometown._id}`);
-});
+}));
 
-app.get('/hometowns/:id', async (req, res) => {
+app.get('/hometowns/:id', wrapAsync(async (req, res) => {
 	const hometown = await Hometown.findById(req.params.id);
 	res.render('hometowns/show', { hometown });
-});
+}));
 
-app.get('/hometowns/:id/edit', async (req, res) => {
+app.get('/hometowns/:id/edit', wrapAsync(async (req, res) => {
 	const hometown = await Hometown.findById(req.params.id);
 	res.render('hometowns/edit', { hometown });
-});
+}));
 
-app.put('/hometowns/:id', async (req, res) => {
+app.put('/hometowns/:id', wrapAsync(async (req, res) => {
 	const { id } = req.params;
 	const hometown = await Hometown.findByIdAndUpdate(id, { ...req.body.hometown }, { runValidators: true, new: true });
 	res.redirect(`/hometowns/${hometown._id}`);
-});
+}));
 
-app.delete('/hometowns/:id', async (req, res) => {
+app.delete('/hometowns/:id', wrapAsync(async (req, res) => {
 	const { id } = req.params;
 	await Hometown.findByIdAndDelete(id);
 	res.redirect('/hometowns');
+}));
+
+// error handling middleware
+app.use((err, req, res, next) => {
+	const { status = 500, message = 'Something went wrong' } = err;
+	res.status(status).send(message);
 });
 
 
