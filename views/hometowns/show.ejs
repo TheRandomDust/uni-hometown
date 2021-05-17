@@ -1,0 +1,31 @@
+<% layout('layouts/boilerplate') %>
+
+	<div class="row">
+		<div class="col-8 offset-2">
+			<div class="card mb-3">
+				<img src="<%= hometown.images[0] %>" class="card-img-top" alt="<%= hometown.description %>">
+				<div class="card-body">
+					<h5 class="card-title">
+						<%= hometown.town %>
+					</h5>
+					<p class="card-text">
+						<%= hometown.description %>
+					</p>
+				</div>
+				<ul class="list-group list-group-flush">
+					<li class="list-group-item text-muted">
+						<%= hometown.extraCoolThings %>
+					</li>
+				</ul>
+				<div class="card-body">
+					<a href="/hometowns/<%= hometown._id %>/edit" class="card-link btn btn-info">Edit</a>
+					<form class="d-inline" action="/hometowns/<%= hometown._id %>?_method=DELETE" method="POST">
+						<button class="btn btn-warning">Delete</button>
+					</form>
+				</div>
+				<div class="card-footer text-muted">
+					<%= hometown.milesFromUni %> miles from University
+				</div>
+			</div>
+		</div>
+	</div>

@@ -1,0 +1,26 @@
+<% layout('layouts/boilerplate') %>
+
+	<h1>All Hometowns</h1>
+
+	<% for (let hometown of hometowns) { %>
+		<div class="card mb-5">
+			<div class="row">
+				<div class="col-md-4">
+					<img src="<%= hometown.images[0] %>" alt="" class="img-fluid">
+				</div>
+				<div class="col-md-8">
+					<h5 class="card-title mt-5">
+						<%= hometown.town %>
+					</h5>
+					<p class="card-text">
+						<%= hometown.description %>
+					</p>
+					<p class="card-text"><small class="text-muted">
+							<%= hometown.extraCoolThings %> - <%= hometown.milesFromUni %> miles from University
+						</small></p>
+					<a href="hometowns/<%= hometown._id %>" class="btn btn-dark">View <%= hometown.town %></a>
+				</div>
+			</div>
+		</div>
+	<% } %>
+
