@@ -1,21 +1,22 @@
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
-const Hometown = require('./models/hometown');
-const Review = require('./models/review');
 const ejsMate = require('ejs-mate');
 const methodOverride = require('method-override');
-const morgan = require('morgan'); // TODO maybe remove later
-// const Joi = require('joi');
-const { hometownSchema, reviewSchema } = require('./schemas');
+const morgan = require('morgan');
 const AppError = require('./utils/AppError');
 const wrapAsync = require('./utils/wrapAsync');
+const hometowns = require('./routes/hometowns');
+const reviews = require('./routes/reviews');
+const session = require('express-session');
+const flash = require('connect-flash');
 
 // config db and connect
 mongoose.connect('mongodb://localhost:27017/hometowns', {
 	useNewUrlParser: true,
 	useCreateIndex: true,
-	useUnifiedTopology: true
+	useUnifiedTopology: true,
+	useFindAndModify: false
 });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -33,90 +34,41 @@ app.set('views', path.join(__dirname, 'views'));
 /**
  * middleware
  */
+const sessionConfig = {
+	secret: 'tempsecret',
+	resave: false,
+	saveUninitialized: true,
+	cookie: {
+		httpOnly: true,
+		expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+		maxAge: 1000 * 60 * 60 * 24 * 7
+	}
+}
+app.use(session(sessionConfig));
 app.use(express.urlencoded({ extended: true })); // middleware to be able to parse key-value pairs from the request body, by default it's undefined
 app.use(methodOverride('_method')); // to use query param to override forms to delete / put / patch
-app.use(morgan('dev')); // TODO maybe remove later
+app.use(morgan('dev'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(flash());
 
-const validateHometown = (req, res, next) => {
-	const { error } = hometownSchema.validate(req.body);
-	if (error) {
-		const errorMessage = error.details.map(el => el.message).join(', '); // make single string message from array of objects
-		throw new AppError(errorMessage, 400);
-	} else {
-		next();
-	}
-}
+app.use((req, res, next) => {
+	res.locals.success = req.flash('success');
+	res.locals.warn = req.flash('warn');
+	res.locals.error = req.flash('error');
+	next();
+})
 
-const validateReview = (req, res, next) => {
-	const { error } = reviewSchema.validate(req.body);
-	if (error) {
-		const errorMessage = error.details.map(el => el.message).join(', '); // make single string message from array of objects
-		throw new AppError(errorMessage, 400);
-	} else {
-		next();
-	}
-}
+app.use('/hometowns', hometowns);
+app.use('/hometowns/:id/reviews', reviews);
 
 /**
  * routes
  */
+
+
 app.get('/', (req, res) => {
 	res.render('home');
 });
-
-
-app.get('/hometowns', wrapAsync(async (req, res) => { 
-	const hometowns = await Hometown.find({});
-	res.render('hometowns/index', { hometowns });
-}));
-
-app.get('/hometowns/new', (req, res) => {
-	res.render('hometowns/new');
-});
-
-app.post('/hometowns', validateHometown, wrapAsync(async (req, res) => {
-	const hometown = new Hometown(req.body.hometown);
-	await hometown.save();
-	res.redirect(`/hometowns/${hometown._id}`);
-}));
-
-app.get('/hometowns/:id', wrapAsync(async (req, res) => {
-	const hometown = await Hometown.findById(req.params.id).populate('reviews');
-	res.render('hometowns/show', { hometown });
-}));
-
-app.get('/hometowns/:id/edit', wrapAsync(async (req, res) => {
-	const hometown = await Hometown.findById(req.params.id);
-	res.render('hometowns/edit', { hometown });
-}));
-
-app.put('/hometowns/:id', validateHometown, wrapAsync(async (req, res) => {
-	const { id } = req.params;
-	const hometown = await Hometown.findByIdAndUpdate(id, { ...req.body.hometown }, { runValidators: true, new: true });
-	res.redirect(`/hometowns/${hometown._id}`);
-}));
-
-app.delete('/hometowns/:id', wrapAsync(async (req, res) => {
-	const { id } = req.params;
-	await Hometown.findByIdAndDelete(id);
-	res.redirect('/hometowns');
-}));
-
-app.post('/hometowns/:id/reviews', validateReview, wrapAsync(async (req, res) => {
-	const hometown = await Hometown.findById(req.params.id);
-	const review = new Review(req.body.review);
-	hometown.reviews.push(review);
-	await review.save();
-	await hometown.save();
-	res.redirect(`/hometowns/${hometown._id}`);
-}));
-
-app.delete('/hometowns/:id/reviews/:reviewId', wrapAsync(async (req, res) => {
-	const { id, reviewId } = req.params;
-	await Hometown.findByIdAndUpdate(id, { $pull: {reviews: reviewId }}); // $pull removes something from array pretty much, array of ObjectId's in this case
-	await Review.findByIdAndDelete(reviewId);
-	res.redirect(`/hometowns/${id}`);
-}));
 
 app.all('*', (req, res, next) => {
 	next(new AppError('Page not found', 404));
