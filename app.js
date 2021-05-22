@@ -6,10 +6,16 @@ const methodOverride = require('method-override');
 const morgan = require('morgan');
 const AppError = require('./utils/AppError');
 const wrapAsync = require('./utils/wrapAsync');
-const hometowns = require('./routes/hometowns');
-const reviews = require('./routes/reviews');
+const hometownRoutes = require('./routes/hometowns');
+const reviewRoutes = require('./routes/reviews');
+const userRoutes = require('./routes/users');
+
 const session = require('express-session');
 const flash = require('connect-flash');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const { use } = require('./routes/hometowns');
+const User = require('./models/user');
 
 // config db and connect
 mongoose.connect('mongodb://localhost:27017/hometowns', {
@@ -51,6 +57,15 @@ app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(flash());
 
+app.use(passport.initialize());
+app.use(passport.session());
+// use local strategy and use the authenticate method from passportLocalMongoose
+passport.use(new LocalStrategy(User.authenticate()));
+// like how to set and get user in session 
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+
 app.use((req, res, next) => {
 	res.locals.success = req.flash('success');
 	res.locals.warn = req.flash('warn');
@@ -58,14 +73,22 @@ app.use((req, res, next) => {
 	next();
 })
 
-app.use('/hometowns', hometowns);
-app.use('/hometowns/:id/reviews', reviews);
+// app.use('/fakeUser', async (req, res) => {
+// 	const user = new User({ email: 'dust@dust.com', username: 'Dust'});
+// 	const newUser = await User.register(user, 'pika');
+// 	res.send(newUser);
+// })
+
+app.use('/hometowns', hometownRoutes);
+app.use('/hometowns/:id/reviews', reviewRoutes);
+
+app.use('/', userRoutes);
+
+
 
 /**
  * routes
  */
-
-
 app.get('/', (req, res) => {
 	res.render('home');
 });
