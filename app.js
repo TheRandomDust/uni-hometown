@@ -5,16 +5,13 @@ const ejsMate = require('ejs-mate');
 const methodOverride = require('method-override');
 const morgan = require('morgan');
 const AppError = require('./utils/AppError');
-const wrapAsync = require('./utils/wrapAsync');
 const hometownRoutes = require('./routes/hometowns');
 const reviewRoutes = require('./routes/reviews');
 const userRoutes = require('./routes/users');
-
 const session = require('express-session');
 const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
-const { use } = require('./routes/hometowns');
 const User = require('./models/user');
 
 // config db and connect
@@ -68,6 +65,7 @@ passport.deserializeUser(User.deserializeUser());
 
 app.use((req, res, next) => {
 	console.log(req.session);
+	// basically store session data, app.use() runs on every request
 	res.locals.success = req.flash('success');
 	res.locals.warn = req.flash('warn');
 	res.locals.error = req.flash('error');
