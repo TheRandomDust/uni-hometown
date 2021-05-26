@@ -27,13 +27,15 @@ router.get('/new', isLoggedIn, (req, res) => {
 
 router.post('/', isLoggedIn, validateHometown, wrapAsync(async (req, res) => {
 	const hometown = new Hometown(req.body.hometown);
+	hometown.author = req.user._id;
 	await hometown.save();
 	req.flash('success', 'Successfully saved new hometown!');
 	res.redirect(`/hometowns/${hometown._id}`);
 }));
 
 router.get('/:id', isLoggedIn, wrapAsync(async (req, res) => {
-	const hometown = await Hometown.findById(req.params.id).populate('reviews');
+	const hometown = await Hometown.findById(req.params.id).populate('reviews').populate('author');
+	// console.log(hometown)
 	res.render('hometowns/show', { hometown });
 }));
 

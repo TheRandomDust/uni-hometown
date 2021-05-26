@@ -13,16 +13,23 @@
 					</p>
 				</div>
 				<ul class="list-group list-group-flush">
+					<li class="list-group-item">
+						Submitted by <%= hometown.author.username %>
+					</li>
+				</ul>
+				<ul class="list-group list-group-flush">
 					<li class="list-group-item text-muted">
 						<%= hometown.extraCoolThings %>
 					</li>
 				</ul>
+				<% if (user && hometown.author.equals(user._id)) { %>
 				<div class="card-body">
 					<a href="/hometowns/<%= hometown._id %>/edit" class="card-link btn btn-info">Edit</a>
 					<form class="d-inline" action="/hometowns/<%= hometown._id %>?_method=DELETE" method="POST">
 						<button class="btn btn-warning">Delete</button>
 					</form>
 				</div>
+				<% } %>
 				<div class="card-footer text-muted">
 					<%= hometown.milesFromUni %> miles from University
 				</div>
