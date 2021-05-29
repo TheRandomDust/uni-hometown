@@ -3,7 +3,7 @@
 	<div class="row">
 		<h1 class="text-center">Edit Hometown</h1>
 		<div class="col-8 offset-2">
-			<form action="/hometowns/<%= hometown._id %>?_method=PUT" method="POST" novalidate class="needs-validation">
+			<form action="/hometowns/<%= hometown._id %>?_method=PUT" method="POST" novalidate class="needs-validation" enctype="multipart/form-data">
 				<div class="mb-3">
 					<label for="town" class="form-label">Enter a town:</label>
 					<input type="text" name="hometown[town]" id="town" class="form-control"
@@ -11,11 +11,16 @@
 						<div class="valid-feedback">Looks good!</div>
 				</div>
 				<div class="mb-3">
+					<label for="images[town]" class="form-label">Add Images:</label>
+					<input class="form-control" type="file" name="images[town]" id="images[town]" multiple>
+				</div>
+				
+				<!-- <div class="mb-3">
 					<label for="images" class="form-label">Enter an image URL (or a comma-separated list for multiple):</label>
 					<input type="text" name="hometown[images]" id="images" class="form-control"
 						value="<%= hometown.images[0] %>" required>
 						<div class="valid-feedback">Looks good!</div>
-				</div>
+				</div> -->
 				<div class="mb-3">
 					<label for="milesFromUni" class="form-label">Miles from University (approx):</label>
 					<div class="input-group">
@@ -38,7 +43,16 @@
 					<div class="valid-feedback">Looks good!</div>
 				</div>
 				<div class="mb-3">
-					<button class="btn btn-info">Save Hometown</button>
+					<% hometown.images.forEach((image, i) => { %>
+						<img src="<%= image.url %>" alt="" class="img-thumbnail">
+						<div class="form-check-inline">
+							<input type="checkbox" id="image-<%= i %>" name="deleteImages[]" value="<%= image.filename %>">
+						</div>
+						<label for="image-<%= i %>">Remove</label>
+					<% }) %>
+				</div>
+				<div class="mb-3">
+					<button class="btn btn-info">Update Hometown</button>
 				</div>
 			</form>
 			<a href="/hometowns/<%= hometown._id %>">Back to hometown</a>

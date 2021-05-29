@@ -6,8 +6,18 @@ module.exports.hometownSchema = Joi.object({
     milesFromUni: Joi.number().required().min(0),
     description: Joi.string().required(),
     extraCoolThings: Joi.string().required(),
-    images: Joi.string(),
+    images: Joi.array().items(
+      Joi.object({
+        url: Joi.string(),
+        filename: Joi.string()
+      })
+    )//,
+    // geometry: Joi.object({
+    //   type: Joi.string().required(),
+    //   coordinates: Joi.number().required()
+    // })
   }).required(),
+  deleteImages: Joi.array()
 });
 
 module.exports.reviewSchema = Joi.object({

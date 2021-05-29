@@ -3,18 +3,19 @@
 	<div class="row">
 		<h1 class="text-center">New Hometown</h1>
 		<div class="col-8 offset-2">
-			<form action="/hometowns" method="POST" novalidate class="needs-validation">
+			<form action="/hometowns" method="POST" novalidate class="needs-validation" enctype="multipart/form-data">
 				<div class="mb-3">
 					<label for="town" class="form-label">Enter a town:</label>
 					<input type="text" name="hometown[town]" id="town" class="form-control" required>
 					<div class="valid-feedback">Looks good!</div>
 				</div>
-				<div class="mb-3">
+				<input type="file" name="images[town]" id="" multiple>
+				<!-- <div class="mb-3">
 					<label for="images" class="form-label">Enter an image URL (or a comma-separated list for
 						multiple):</label>
 					<input type="text" name="hometown[images]" id="images" class="form-control" required>
 					<div class="valid-feedback">Looks good!</div>
-				</div>
+				</div> -->
 				<div class="mb-3">
 					<label for="milesFromUni" class="form-label">Miles from University (approx):</label>
 					<div class="input-group">

@@ -10,8 +10,23 @@ const HometownSchema = new Schema({
 	},
 	description: String,
 	extraCoolThings: String,
-	location: String,
-	images: [String],
+	geometry: {
+		type: {
+			type: String,
+			enum: ['Point'],
+			required: true
+		},
+		coordinates: {
+			type: [Number],
+			required: true
+		}
+	},
+	images: [ 
+		{
+			url: String,
+			filename: String
+		}
+	],
 	author: {
 		type: Schema.Types.ObjectId,
 		ref: 'User'

@@ -34,6 +34,7 @@ module.exports.isReviewAuthor = async (req, res, next) => {
 };
 
 module.exports.validateHometown = (req, res, next) => {
+	console.log(req.body);
 	const { error } = hometownSchema.validate(req.body);
 	if (error) {
 		const errorMessage = error.details.map(el => el.message).join(', '); // make single string message from array of objects

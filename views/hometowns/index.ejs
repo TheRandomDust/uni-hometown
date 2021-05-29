@@ -6,7 +6,12 @@
 		<div class="card mb-5">
 			<div class="row">
 				<div class="col-md-4">
-					<img src="<%= hometown.images[0] %>" alt="" class="img-fluid">
+					<!-- TODO this is a hack, figure out why hometown.images[0].url throws undefined error -->
+					<% hometown.images.forEach((image, i) => { %>
+						<% if (i === 0) { %>
+							<img src="<%= image.url %>" alt="" class="img-fluid">
+						<% } %>
+					<% }) %>
 				</div>
 				<div class="col-md-8">
 					<h5 class="card-title mt-5">
@@ -23,4 +28,3 @@
 			</div>
 		</div>
 	<% } %>
-

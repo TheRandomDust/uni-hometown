@@ -3,7 +3,27 @@
 	<div class="row">
 		<div class="col-6 offset-1">
 			<div class="card mb-3">
-				<img src="<%= hometown.images[0] %>" class="card-img-top" alt="<%= hometown.description %>">
+				<div id="hometownCarousel" class="carousel slide" data-bs-ride="carousel">
+					<div class="carousel-inner">
+						<% hometown.images.forEach((image, i) => { %>
+							<div class="carousel-item <%= i === 0 ? 'active' : '' %>">
+								<img class="d-block w-100" src="<%= image.url %>" alt="<%= hometown.description %>">
+							</div>
+						<% }) %>
+					</div>
+					<% if (hometown.images.length > 1) { %> 
+					<button class="carousel-control-prev" type="button" data-bs-target="#hometownCarousel" data-bs-slide="prev">
+						<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+						<span class="visually-hidden">Previous</span>
+					</button>
+					<button class="carousel-control-next" type="button" data-bs-target="#hometownCarousel" data-bs-slide="next">
+						<span class="carousel-control-next-icon" aria-hidden="true"></span>
+						<span class="visually-hidden">Next</span>
+					</button>
+					<% } %>
+				</div>
+
+				
 				<div class="card-body">
 					<h5 class="card-title">
 						<%= hometown.town %>
@@ -35,6 +55,7 @@
 				</div>
 			</div>
 		</div>
+		  
 		<div class="col-4">
 			<% if (user) { %>
 				<h2>Leave a Review</h2>
