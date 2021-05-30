@@ -1,17 +1,17 @@
 <% layout('layouts/boilerplate') %>
 
+	<div id="map" style="width: 100%; height: 500px"></div>
 	<h1>All Hometowns</h1>
 
 	<% for (let hometown of hometowns) { %>
 		<div class="card mb-5">
 			<div class="row">
 				<div class="col-md-4">
-					<!-- TODO this is a hack, figure out why hometown.images[0].url throws undefined error -->
-					<% hometown.images.forEach((image, i) => { %>
-						<% if (i === 0) { %>
-							<img src="<%= image.url %>" alt="" class="img-fluid">
-						<% } %>
-					<% }) %>
+					<% if (hometown.images.length) { %>
+						<img src="<%= hometown.images[0].url %>" alt="" class="img-fluid">
+					<% } else { %>
+						<img src="" alt=""> <!-- TODO later have a default image -->
+					<% } %>
 				</div>
 				<div class="col-md-8">
 					<h5 class="card-title mt-5">
@@ -28,3 +28,9 @@
 			</div>
 		</div>
 	<% } %>
+	<script>
+		const mapToken = '<%- process.env.MAPBOX_TOKEN %>';	
+		const hometowns = { features: JSON.parse('<%- JSON.stringify(hometowns) %>') };
+		console.log(hometowns);
+	</script>
+	<script src="/scripts/clusterMap.js"></script>

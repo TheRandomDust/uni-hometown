@@ -3,8 +3,8 @@ const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const mapBoxToken = process.env.MAPBOX_TOKEN;
 const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 const { cloudinary } = require('../cloudinary');
-const mapboxgl = require('mapbox-gl');
-mapboxgl.accessToken = mapBoxToken;
+// const mapboxgl = require('mapbox-gl');
+// mapboxgl.accessToken = mapBoxToken;
 
 module.exports.index = async (req, res) => { 
 	const hometowns = await Hometown.find({});

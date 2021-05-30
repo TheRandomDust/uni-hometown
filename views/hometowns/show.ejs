@@ -1,108 +1,114 @@
 <% layout('layouts/boilerplate') %>
 <link rel="stylesheet" href="/styles/stars.css">
-	<div class="row">
-		<div class="col-6 offset-1">
-			<div class="card mb-3">
-				<div id="hometownCarousel" class="carousel slide" data-bs-ride="carousel">
-					<div class="carousel-inner">
-						<% hometown.images.forEach((image, i) => { %>
-							<div class="carousel-item <%= i === 0 ? 'active' : '' %>">
-								<img class="d-block w-100" src="<%= image.url %>" alt="<%= hometown.description %>">
-							</div>
-						<% }) %>
-					</div>
-					<% if (hometown.images.length > 1) { %> 
-					<button class="carousel-control-prev" type="button" data-bs-target="#hometownCarousel" data-bs-slide="prev">
-						<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-						<span class="visually-hidden">Previous</span>
-					</button>
-					<button class="carousel-control-next" type="button" data-bs-target="#hometownCarousel" data-bs-slide="next">
-						<span class="carousel-control-next-icon" aria-hidden="true"></span>
-						<span class="visually-hidden">Next</span>
-					</button>
-					<% } %>
-				</div>
 
-				
-				<div class="card-body">
-					<h5 class="card-title">
-						<%= hometown.town %>
-					</h5>
-					<p class="card-text">
-						<%= hometown.description %>
-					</p>
+<script>
+	const mapToken = '<%- process.env.MAPBOX_TOKEN %>';	
+	const hometown = '<%- JSON.stringify(hometown) %>';
+</script>
+<div class="row">
+	<div class="col-6 offset-1">
+		<div class="card mb-3">
+			<div id="hometownCarousel" class="carousel slide" data-bs-ride="carousel">
+				<div class="carousel-inner">
+					<% hometown.images.forEach((image, i) => { %>
+						<div class="carousel-item <%= i === 0 ? 'active' : '' %>">
+							<img class="d-block w-100" src="<%= image.url %>" alt="<%= hometown.description %>">
+						</div>
+					<% }) %>
 				</div>
-				<ul class="list-group list-group-flush">
-					<li class="list-group-item">
-						Submitted by <%= hometown.author.username %>
-					</li>
-				</ul>
-				<ul class="list-group list-group-flush">
-					<li class="list-group-item text-muted">
-						<%= hometown.extraCoolThings %>
-					</li>
-				</ul>
-				<% if (user && hometown.author.equals(user._id)) { %>
-				<div class="card-body">
-					<a href="/hometowns/<%= hometown._id %>/edit" class="card-link btn btn-info">Edit</a>
-					<form class="d-inline" action="/hometowns/<%= hometown._id %>?_method=DELETE" method="POST">
-						<button class="btn btn-warning">Delete</button>
-					</form>
-				</div>
+				<% if (hometown.images.length > 1) { %> 
+				<button class="carousel-control-prev" type="button" data-bs-target="#hometownCarousel" data-bs-slide="prev">
+					<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+					<span class="visually-hidden">Previous</span>
+				</button>
+				<button class="carousel-control-next" type="button" data-bs-target="#hometownCarousel" data-bs-slide="next">
+					<span class="carousel-control-next-icon" aria-hidden="true"></span>
+					<span class="visually-hidden">Next</span>
+				</button>
 				<% } %>
-				<div class="card-footer text-muted">
-					<%= hometown.milesFromUni %> miles from University
-				</div>
+			</div>
+			<div class="card-body">
+				<h5 class="card-title">
+					<%= hometown.town %>
+				</h5>
+				<p class="card-text">
+					<%= hometown.description %>
+				</p>
+			</div>
+			<ul class="list-group list-group-flush">
+				<li class="list-group-item">
+					Submitted by <%= hometown.author.username %>
+				</li>
+			</ul>
+			<ul class="list-group list-group-flush">
+				<li class="list-group-item text-muted">
+					<%= hometown.extraCoolThings %>
+				</li>
+			</ul>
+			<% if (user && hometown.author.equals(user._id)) { %>
+			<div class="card-body">
+				<a href="/hometowns/<%= hometown._id %>/edit" class="card-link btn btn-info">Edit</a>
+				<form class="d-inline" action="/hometowns/<%= hometown._id %>?_method=DELETE" method="POST">
+					<button class="btn btn-warning">Delete</button>
+				</form>
+			</div>
+			<% } %>
+			<div class="card-footer text-muted">
+				<%= hometown.milesFromUni %> miles from University
 			</div>
 		</div>
-		  
-		<div class="col-4">
-			<% if (user) { %>
-				<h2>Leave a Review</h2>
-				<form action="/hometowns/<%= hometown._id %>/reviews" class="mb-3 needs-validation" method="POST" novalidate>
-					<!-- <div class="mb-3">
-						<label for="range" class="form-label">Rating</label>
-						<input type="range" id="range" name="review[rating]" min="1" max="5" class="form-range">	
-					</div> -->
-					<div class="mb-3">
-						<fieldset class="starability-basic">
-							<legend>Rating:</legend>
-							<input type="radio" id="no-rating" class="input-no-rating" name="review[rating]" value="1" checked aria-label="No rating." />
-							<input type="radio" id="rating1" name="review[rating]" value="1" />
-							<label for="rating1" title="Terrible">1 star</label>
-							<input type="radio" id="rating2" name="review[rating]" value="2" />
-							<label for="rating2" title="Not good">2 stars</label>
-							<input type="radio" id="rating3" name="review[rating]" value="3" />
-							<label for="rating3" title="Average">3 stars</label>
-							<input type="radio" id="rating4" name="review[rating]" value="4" />
-							<label for="rating4" title="Very good">4 stars</label>
-							<input type="radio" id="rating5" name="review[rating]" value="5" />
-							<label for="rating5" title="Amazing">5 stars</label>
-						</fieldset>
-					</div>
-					<div class="mb-3">
-						<label class="form-label" for="body">Review Text:</label>
-						<textarea class="form-control" name="review[body]" id="body" cols="30" rows="3" required></textarea>
-						<div class="valid-feedback">Looks good!</div>
-					</div>
-					<button class="btn btn-info">Submit</button>
-				</form>
-				<% for (let review of hometown.reviews) { %>
-				<div class="card mb-3">
-					<div class="card-body">
-						<h6 class="card-subtitle mb-2 text-muted"><%= review.author.username %></h6>
-						<p class="starability-result" data-rating="<%= review.rating %>"></p>
-						<p class="card-text">
-							Review: <%= review.body %>
-						</p>
-						<% if (user && review.author.equals(user._id)) { %>
-							<form action="/hometowns/<%= hometown._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
-								<button class="btn btn-sm btn-danger">Delete</button>
-							</form>
-						<% } %>
-					</div>
-				</div>
-				<% } %>
-			<% } %>
-		</div>
 	</div>
+		
+	<div class="col-4">
+		<% if (user) { %>
+			<h2>Leave a Review</h2>
+			<form action="/hometowns/<%= hometown._id %>/reviews" class="mb-3 needs-validation" method="POST" novalidate>
+				<!-- <div class="mb-3">
+					<label for="range" class="form-label">Rating</label>
+					<input type="range" id="range" name="review[rating]" min="1" max="5" class="form-range">	
+				</div> -->
+				<div class="mb-3">
+					<fieldset class="starability-basic">
+						<legend>Rating:</legend>
+						<input type="radio" id="no-rating" class="input-no-rating" name="review[rating]" value="1" checked aria-label="No rating." />
+						<input type="radio" id="rating1" name="review[rating]" value="1" />
+						<label for="rating1" title="Terrible">1 star</label>
+						<input type="radio" id="rating2" name="review[rating]" value="2" />
+						<label for="rating2" title="Not good">2 stars</label>
+						<input type="radio" id="rating3" name="review[rating]" value="3" />
+						<label for="rating3" title="Average">3 stars</label>
+						<input type="radio" id="rating4" name="review[rating]" value="4" />
+						<label for="rating4" title="Very good">4 stars</label>
+						<input type="radio" id="rating5" name="review[rating]" value="5" />
+						<label for="rating5" title="Amazing">5 stars</label>
+					</fieldset>
+				</div>
+				<div class="mb-3">
+					<label class="form-label" for="body">Review Text:</label>
+					<textarea class="form-control" name="review[body]" id="body" cols="30" rows="3" required></textarea>
+					<div class="valid-feedback">Looks good!</div>
+				</div>
+				<button class="btn btn-info">Submit</button>
+			</form>
+			<% for (let review of hometown.reviews) { %>
+			<div class="card mb-3">
+				<div class="card-body">
+					<h6 class="card-subtitle mb-2 text-muted"><%= review.author.username %></h6>
+					<p class="starability-result" data-rating="<%= review.rating %>"></p>
+					<p class="card-text">
+						Review: <%= review.body %>
+					</p>
+					<% if (user && review.author.equals(user._id)) { %>
+						<form action="/hometowns/<%= hometown._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
+							<button class="btn btn-sm btn-danger">Delete</button>
+						</form>
+					<% } %>
+				</div>
+			</div>
+			<% } %>
+			<div id='map' style='width: 400px; height: 300px;' class="mb-3"></div> <!-- gets populated by Mapbox in the script below -->
+
+		<% } %>
+	</div>
+</div>
+<script src="/scripts/showPageMap.js"></script>
